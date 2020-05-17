@@ -106,8 +106,7 @@ namespace MockHTTP.NET
         /// <param name="handlerFunction">The function to call when a mock request is
         /// received.</param>
         /// <param name="httpMethod">The HTTP method to mock.</param>
-        public HttpHandler(string url, Handler handlerFunction,
-            HttpMethods httpMethod)
+        public HttpHandler(string url, Handler handlerFunction, HttpMethods httpMethod)
         {
             Url = url;
             HttpMethod = httpMethod.GetMethod();
