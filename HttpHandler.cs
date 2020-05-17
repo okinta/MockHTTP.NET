@@ -79,7 +79,7 @@ namespace MockHTTP.NET
         public HttpHandler(string url, string response, HttpMethods httpMethod)
         {
             Url = url;
-            HttpMethod = httpMethod.ToString();
+            HttpMethod = httpMethod.GetMethod();
             HandlerFunction = (req, rsp, prm) => response;
 
             MockHttpHandler = new MockHttpHandler(
@@ -110,7 +110,7 @@ namespace MockHTTP.NET
             HttpMethods httpMethod)
         {
             Url = url;
-            HttpMethod = httpMethod.ToString();
+            HttpMethod = httpMethod.GetMethod();
             HandlerFunction = handlerFunction;
 
             MockHttpHandler = new MockHttpHandler(
@@ -129,7 +129,7 @@ namespace MockHTTP.NET
         public HttpHandler(string url, string expectedContent, string response)
         {
             Url = url;
-            HttpMethod = HttpMethods.Post.ToString();
+            HttpMethod = HttpMethods.Post.GetMethod();
             ExpectedResponse = expectedContent;
             ValidatedRequestResponse = response;
             HandlerFunction = ValidateRequest;
