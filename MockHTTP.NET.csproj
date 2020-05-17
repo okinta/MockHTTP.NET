@@ -10,4 +10,9 @@
     <None Remove="Tests\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="AP.MockHttpServer" Version="1.5.0.1061" />
+    <PackageReference Include="xunit.assert" Version="2.4.1" />
+  </ItemGroup>
+
 </Project>
