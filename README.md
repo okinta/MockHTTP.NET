@@ -6,3 +6,7 @@ services using C#.
 Extends on the existing [MockHttpServer][1] project.
 
 [1]: https://github.com/jrharmon/MockHttpServer
+
+## Usage
+
+See Tests for examples.

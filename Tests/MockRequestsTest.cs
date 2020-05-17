@@ -1,5 +1,5 @@
-﻿using MockHTTP.NET;
-using MockHTTP.NET.Exceptions;
+﻿using MockHTTP.NET.Exceptions;
+using MockHTTP.NET;
 using RestSharp;
 using Xunit;
 
