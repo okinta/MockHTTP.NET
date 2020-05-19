@@ -1,10 +1,24 @@
 ﻿using MockHttp.Net.Exceptions;
 using MockHttpServer;
+using System.Linq;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System;
+
+[assembly: InternalsVisibleTo("Tests")]
 
 namespace MockHttp.Net
 {
+    /// <summary>
+    /// A function to use to generate a random number between the two given values.
+    /// </summary>
+    /// <param name="minValue">The inclusive lower bound of the random number
+    /// returned.</param>
+    /// <param name="maxValue">The exclusive upper bound of the random number
+    /// returned.</param>
+    /// <returns>A random number between the two given values.</returns>
+    internal delegate int RandomNumber(int minValue, int maxValue);
+
     /// <summary>
     /// Describes methods to help mock HTTP requests.
     /// </summary>
@@ -15,30 +29,46 @@ namespace MockHttp.Net
         /// </summary>
         public string Url { get; }
 
+        private const int PortInUseErrorCode = 183;
         private const int TestPortRangeEnd = 8200;
         private const int TestPortRangeStart = 8100;
         private HttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
-        private const int PortInUseErrorCode = 183;
 
         /// <summary>
         /// Instantiates a new instance. Starts the mock HTTP server.
         /// </summary>
-        /// <param name="handlers"></param>
+        /// <param name="handlers">The list of handlers to use for serving the mock HTTP
+        /// requests.</param>
         /// <exception cref="ArgumentNullException">If <paramref name="handlers"/> is
         /// null.</exception>
-        public MockRequests(params HttpHandler[] handlers)
+        public MockRequests(params HttpHandler[] handlers) :
+            this(new Random().Next, handlers)
+        {
+        }
+
+        /// <summary>
+        /// Instantiates a new instance with a custom random number generator. Starts
+        /// the mock HTTP server.
+        /// </summary>
+        /// <param name="random">The random number generator to use.</param>
+        /// <param name="handlers">The list of handlers to use for serving the mock HTTP
+        /// requests.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="handlers"/> is
+        /// null.</exception>
+        internal MockRequests(RandomNumber random, params HttpHandler[] handlers)
         {
             Handlers = handlers ?? throw new ArgumentNullException(
                 nameof(handlers), @"handlers must not be null");
 
-            var port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
+            var mockHandlers = handlers.GetMockHttpHandlers().ToArray();
+            int port;
             do
             {
+                port = random(TestPortRangeStart, TestPortRangeEnd);
                 try
                 {
-                    port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
-                    MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
+                    MockServer = new MockServer(port, mockHandlers);
                 }
                 catch (HttpListenerException e)
                 {
