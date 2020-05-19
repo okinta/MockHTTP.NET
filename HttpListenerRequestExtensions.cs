@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Net;
 
-namespace MockHTTP.NET
+namespace MockHttp.Net
 {
     /// <summary>
     /// Extends the HttpListenerRequest class.

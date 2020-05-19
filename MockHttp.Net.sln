@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30105.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockHTTP.NET", "MockHTTP.NET.csproj", "{301A033D-5A38-4C9A-9D52-673EA43D6916}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockHttp.Net", "MockHttp.Net.csproj", "{301A033D-5A38-4C9A-9D52-673EA43D6916}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{D2B96E1D-76E3-4DB9-AF18-F5B4E259ECB1}"
 EndProject

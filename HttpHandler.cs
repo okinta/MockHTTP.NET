@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using Xunit;
 
-namespace MockHTTP.NET
+namespace MockHttp.Net
 {
     /// <summary>
     /// Allows counting of calls to a MockHttpHandler.

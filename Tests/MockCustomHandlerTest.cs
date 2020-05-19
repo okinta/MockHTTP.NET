@@ -1,4 +1,4 @@
-﻿using MockHTTP.NET;
+﻿using MockHttp.Net;
 using RestSharp;
 using System.Collections.Generic;
 using System.Net;

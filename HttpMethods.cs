@@ -1,4 +1,4 @@
-﻿namespace MockHTTP.NET
+﻿namespace MockHttp.Net
 {
     /// <summary>
     /// The types of HTTP methods available to mock

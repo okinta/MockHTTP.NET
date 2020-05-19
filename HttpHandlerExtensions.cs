@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MockHTTP.NET
+namespace MockHttp.Net
 {
     /// <summary>
     /// Provides an extension method to convert CustomMockHttpHandler instances

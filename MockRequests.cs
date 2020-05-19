@@ -1,9 +1,9 @@
-﻿using MockHTTP.NET.Exceptions;
+﻿using MockHttp.Net.Exceptions;
 using MockHttpServer;
 using System.Net;
 using System;
 
-namespace MockHTTP.NET
+namespace MockHttp.Net
 {
     /// <summary>
     /// Describes methods to help mock HTTP requests.

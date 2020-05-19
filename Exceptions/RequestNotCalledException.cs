@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MockHTTP.NET.Exceptions
+namespace MockHttp.Net.Exceptions
 {
     /// <summary>
     /// Thrown when a request was not called.
