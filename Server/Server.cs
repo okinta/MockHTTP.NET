@@ -44,7 +44,13 @@ namespace Server
         public void Dispose()
         {
             _listener.Stop();
-            _task.GetAwaiter().GetResult();
+            try
+            {
+                _task.GetAwaiter().GetResult();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
         }
     }
 }
