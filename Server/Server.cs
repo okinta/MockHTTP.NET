@@ -5,7 +5,7 @@ using System;
 
 namespace Server
 {
-    internal class Server : IDisposable
+    public class Server : IDisposable
     {
         private readonly HttpListener _listener = new HttpListener();
         private readonly Task _task;
@@ -19,22 +19,32 @@ namespace Server
 
         private async Task HandleRequests()
         {
-            while (_listener.IsListening)
+            try
             {
-                var context = await _listener.GetContextAsync();
-                var buffer = Encoding.UTF8.GetBytes("hello");
-                context.Response.ContentLength64 += buffer.Length;
-                await context.Response.OutputStream.WriteAsync(
-                    buffer, 0, buffer.Length);
-                context.Response.OutputStream.Close();
-                context.Response.Close();
+                while (_listener.IsListening)
+                {
+                    var context = await _listener.GetContextAsync();
+                    var buffer = Encoding.UTF8.GetBytes("hello");
+                    context.Response.ContentLength64 += buffer.Length;
+                    await context.Response.OutputStream.WriteAsync(
+                        buffer, 0, buffer.Length);
+                    context.Response.OutputStream.Close();
+                    context.Response.Close();
+                }
+            }
+            catch (HttpListenerException ex)
+            {
+                // When the listener is stopped, it will throw an exception for being
+                // cancelled, so just ignore it
+                if (ex.ErrorCode != 995)
+                    throw;
             }
         }
 
         public void Dispose()
         {
             _listener.Stop();
-            _task.Dispose();
+            _task.GetAwaiter().GetResult();
         }
     }
 }
