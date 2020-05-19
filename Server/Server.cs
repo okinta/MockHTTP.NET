@@ -23,6 +23,7 @@ namespace Server
             {
                 while (_listener.IsListening)
                 {
+                    Console.WriteLine("Listening");
                     var context = await _listener.GetContextAsync();
                     var buffer = Encoding.UTF8.GetBytes("hello");
                     context.Response.ContentLength64 += buffer.Length;
