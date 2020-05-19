@@ -29,11 +29,11 @@ namespace MockHttp.Net
         /// </summary>
         public string Url { get; }
 
-        private const int PortInUseErrorCode = 183;
         private const int TestPortRangeEnd = 8200;
         private const int TestPortRangeStart = 8100;
         private HttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
+        private static readonly int[] PortInUseErrorCodes = { 183, 400 };
 
         /// <summary>
         /// Instantiates a new instance. Starts the mock HTTP server.
@@ -72,7 +72,8 @@ namespace MockHttp.Net
                 }
                 catch (HttpListenerException e)
                 {
-                    if (e.ErrorCode != PortInUseErrorCode) throw;
+                    Console.WriteLine("Got error {0}", e.ErrorCode);
+                    if (!PortInUseErrorCodes.Contains(e.ErrorCode)) throw;
                 }
             } while (MockServer is null);
 
