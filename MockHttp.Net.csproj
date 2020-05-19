@@ -9,6 +9,7 @@
     <Description>Provides the ability to mock a HTTP server. For help with testing external services using C#.</Description>
     <Copyright>2020 Okinta IT LLC</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AP.MockHttpServer" Version="1.5.0.1061" />
     <PackageReference Include="AT.MockHttpServer" Version="1.6.0" />
     <PackageReference Include="xunit.assert" Version="2.4.1" />
   </ItemGroup>
