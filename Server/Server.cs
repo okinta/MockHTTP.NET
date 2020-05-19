@@ -2,6 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 using System;
+using System.Threading;
 
 namespace Server
 {
@@ -14,7 +15,7 @@ namespace Server
         {
             _listener.Prefixes.Add("http://localhost:8000/");
             _listener.Start();
-            _task = HandleRequests();
+            _task = Task.Run(HandleRequests);
         }
 
         private async Task HandleRequests()
