@@ -9,7 +9,7 @@
     <Description>Provides the ability to mock a HTTP server. For help with testing external services using C#.</Description>
     <Copyright>2020 Okinta IT LLC</Copyright>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
   </PropertyGroup>
 
   <ItemGroup>

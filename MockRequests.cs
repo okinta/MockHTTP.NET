@@ -19,6 +19,7 @@ namespace MockHttp.Net
         private const int TestPortRangeStart = 8100;
         private HttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
+        private const int PortInUseErrorCode = 183;
 
         /// <summary>
         /// Instantiates a new instance. Starts the mock HTTP server.
@@ -32,16 +33,18 @@ namespace MockHttp.Net
                 nameof(handlers), @"handlers must not be null");
 
             var port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
-            try
+            do
             {
-                MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
-            }
-            catch (HttpListenerException)
-            {
-                // Try another port
-                port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
-                MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
-            }
+                try
+                {
+                    port = new Random().Next(TestPortRangeStart, TestPortRangeEnd);
+                    MockServer = new MockServer(port, handlers.GetMockHttpHandlers());
+                }
+                catch (HttpListenerException e)
+                {
+                    if (e.ErrorCode != PortInUseErrorCode) throw;
+                }
+            } while (MockServer is null);
 
             Url = $"http://localhost:{port}/";
         }
