@@ -25,12 +25,15 @@ namespace Server
                 {
                     Console.WriteLine("Listening");
                     var context = await _listener.GetContextAsync();
+                    Console.WriteLine("got context");
                     var buffer = Encoding.UTF8.GetBytes("hello");
                     context.Response.ContentLength64 += buffer.Length;
                     await context.Response.OutputStream.WriteAsync(
                         buffer, 0, buffer.Length);
+                    Console.WriteLine("sent response");
                     context.Response.OutputStream.Close();
                     context.Response.Close();
+                    Console.WriteLine("done");
                 }
             }
             catch (HttpListenerException ex)
@@ -39,6 +42,7 @@ namespace Server
                 // cancelled, so just ignore it
                 if (ex.ErrorCode != 995)
                     throw;
+                Console.WriteLine("goodbye");
             }
         }
 
