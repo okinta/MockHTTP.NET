@@ -6,6 +6,9 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/okinta/MockHttp.Net</RepositoryUrl>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <Description>Provides the ability to mock a HTTP server. For help with testing external services using C#.</Description>
+    <Copyright>2020 Okinta IT LLC</Copyright>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
