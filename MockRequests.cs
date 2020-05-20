@@ -1,8 +1,10 @@
 ﻿using MockHttp.Net.Exceptions;
 using MockHttpServer;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using System;
 
 [assembly: InternalsVisibleTo("Tests")]
@@ -68,7 +70,7 @@ namespace MockHttp.Net
                 port = random(TestPortRangeStart, TestPortRangeEnd);
                 try
                 {
-                    MockServer = new MockServer(port, mockHandlers);
+                    MockServer = CreateMockServer(port, mockHandlers);
                 }
                 catch (HttpListenerException e)
                 {
@@ -116,6 +118,20 @@ namespace MockHttp.Net
                         $"{handler.Url} was only expected to be called once. " +
                         $"Instead, was called {handler.Called} times");
             }
+        }
+
+        /// <summary>
+        /// Creates a MockServer instance in a new thread.
+        /// </summary>
+        /// <param name="port">The port to run the server on.</param>
+        /// <param name="handlers">The list of response handlers for the mock
+        /// server.</param>
+        /// <returns>The instantiated MockServer instance.</returns>
+        private static MockServer CreateMockServer(
+            int port, IEnumerable<MockHttpHandler> handlers)
+        {
+            return Task.Run(() =>
+                new MockServer(port, handlers)).GetAwaiter().GetResult();
         }
     }
 }
