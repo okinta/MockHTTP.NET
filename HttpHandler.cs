@@ -1,6 +1,7 @@
 ﻿using MockHttpServer;
 using System.Collections.Generic;
 using System.Net;
+using System;
 using Xunit;
 
 namespace MockHttp.Net
@@ -23,6 +24,11 @@ namespace MockHttp.Net
             HttpListenerRequest req,
             HttpListenerResponse rsp,
             Dictionary<string, string> prm);
+
+        /// <summary>
+        /// Triggered when an exception is thrown within a handler.
+        /// </summary>
+        public event Action<Exception> OnError;
 
         /// <summary>
         /// Gets the number of times the MockHttpHandler was called.
@@ -143,7 +149,16 @@ namespace MockHttp.Net
             Dictionary<string, string> prm)
         {
             Called += 1;
-            return HandlerFunction(req, rsp, prm);
+
+            try
+            {
+                return HandlerFunction(req, rsp, prm);
+            }
+            catch (Exception e)
+            {
+                OnError?.Invoke(e);
+                throw;
+            }
         }
 
         private string ValidateRequest(

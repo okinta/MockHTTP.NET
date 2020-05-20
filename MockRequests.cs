@@ -33,6 +33,7 @@ namespace MockHttp.Net
 
         private const int TestPortRangeEnd = 8200;
         private const int TestPortRangeStart = 8100;
+        private Exception _handlerException;
         private HttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
         private static readonly int[] PortInUseErrorCodes = { 183, 400 };
@@ -62,6 +63,9 @@ namespace MockHttp.Net
         {
             Handlers = handlers ?? throw new ArgumentNullException(
                 nameof(handlers), @"handlers must not be null");
+
+            foreach (var handler in handlers)
+                handler.OnError += OnHandlerError;
 
             var mockHandlers = handlers.GetMockHttpHandlers().ToArray();
             int port;
@@ -98,6 +102,18 @@ namespace MockHttp.Net
         }
 
         /// <summary>
+        /// Asserts that no handlers have thrown exceptions. This method throws any
+        /// exceptions that were thrown by a handler.
+        /// </summary>
+        public void AssertNoHandlerExceptions()
+        {
+            if (_handlerException == null) return;
+            var e = _handlerException;
+            _handlerException = null;
+            throw e;
+        }
+
+        /// <summary>
         /// Asserts that all requests have been called exactly once.
         /// </summary>
         /// <exception cref="RequestNotCalledException">If a request was not
@@ -106,6 +122,8 @@ namespace MockHttp.Net
         /// more than once.</exception>
         public void AssertAllCalledOnce()
         {
+            AssertNoHandlerExceptions();
+
             foreach (var handler in Handlers)
             {
                 if (handler.Called == 0)
@@ -132,6 +150,16 @@ namespace MockHttp.Net
         {
             return Task.Run(() =>
                 new MockServer(port, handlers)).GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Called when an Exception is thrown by a mock response handler. Saves the
+        /// Exception to be throw later via AssertNoHandlerExceptions().
+        /// </summary>
+        /// <param name="e">The Exception that was thrown.</param>
+        private void OnHandlerError(Exception e)
+        {
+            _handlerException = e;
         }
     }
 }
