@@ -72,5 +72,22 @@ namespace Tests
             client = new RestClient(requests4.Url);
             Assert.Equal("", client.Get(request).Content);
         }
+
+        [Fact]
+        public void TestAssertPostContent()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler(
+                    "/send", "data=54", "we got 54"));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("send");
+            Assert.StartsWith(
+                "Exception in handler: Assert.Equal() Fail",
+                client.Post(request).Content);
+
+            request.AddParameter("data", 54);
+            Assert.Equal("we got 54", client.Post(request).Content);
+        }
     }
 }
