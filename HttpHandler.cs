@@ -82,14 +82,9 @@ namespace MockHttp.Net
         /// <param name="response">The response to return when a mock request is
         /// received.</param>
         /// <param name="httpMethod">The HTTP method to mock.</param>
-        public HttpHandler(string url, string response, HttpMethods httpMethod)
+        public HttpHandler(string url, string response, HttpMethods httpMethod) :
+            this(url, CreateHandler(response), httpMethod)
         {
-            Url = url;
-            HttpMethod = httpMethod.GetMethod();
-            HandlerFunction = (req, rsp, prm) => response;
-
-            MockHttpHandler = new MockHttpHandler(
-                url, HttpMethod, HandlerFunctionWithCounter);
         }
 
         /// <summary>
@@ -168,6 +163,11 @@ namespace MockHttp.Net
         {
             Assert.Equal(ExpectedResponse, req.GetContent());
             return ValidatedRequestResponse;
+        }
+
+        private static Handler CreateHandler(string response)
+        {
+            return (req, rsp, prm) => response;
         }
     }
 }
