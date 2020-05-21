@@ -1,6 +1,7 @@
 ﻿using MockHttp.Net.Exceptions;
 using MockHttp.Net;
 using RestSharp;
+using System;
 using Xunit.Sdk;
 using Xunit;
 
@@ -139,6 +140,58 @@ namespace Tests
             Assert.Equal("we got 56", client.Post(request).Content);
             requests.AssertNoHandlerExceptions();
             Assert.Equal(2, requests.Handlers[0].Called);
+        }
+
+        [Fact]
+        public void TestValidateIncorrectSequenceOfParameters()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler("/send",
+                    new ValidateRequestHandler(
+                        "data=54", "we got 54"),
+                    new ValidateRequestHandler(
+                        "data=56", "we got 56")));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("send");
+            request.AddParameter("data", 54);
+
+            Assert.Equal("we got 54", client.Post(request).Content);
+            Assert.StartsWith(
+                "Exception in handler: Assert.Equal() Fail",
+                client.Post(request).Content);
+
+            Assert.Throws<EqualException>(
+                () => requests.AssertNoHandlerExceptions());
+            Assert.Equal(2, requests.Handlers[0].Called);
+        }
+
+        [Fact]
+        public void TestTooManySequenceCalls()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler("/send",
+                    new ValidateRequestHandler(
+                        "data=54", "we got 54"),
+                    new ValidateRequestHandler(
+                        "data=56", "we got 56")));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("send");
+            request.AddParameter("data", 54);
+            Assert.Equal("we got 54", client.Post(request).Content);
+
+            request = new RestRequest("send");
+            request.AddParameter("data", 56);
+            Assert.Equal("we got 56", client.Post(request).Content);
+
+            Assert.StartsWith(
+                "Exception in handler: No more handlers are available",
+                client.Post(request).Content);
+
+            Assert.Throws<InvalidOperationException>(
+                () => requests.AssertNoHandlerExceptions());
+            Assert.Equal(3, requests.Handlers[0].Called);
         }
     }
 }
