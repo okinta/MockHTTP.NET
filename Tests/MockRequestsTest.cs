@@ -116,8 +116,29 @@ namespace Tests
             var request = new RestRequest("send");
             request.AddParameter("data", 54);
             Assert.Equal("we got 54", client.Post(request).Content);
-            requests.AssertNoHandlerExceptions();
             requests.AssertAllCalledOnce();
+        }
+
+        [Fact]
+        public void TestValidateSequenceOfParameters()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler("/send",
+                    new ValidateRequestHandler(
+                        "data=54", "we got 54"),
+                    new ValidateRequestHandler(
+                        "data=56", "we got 56")));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("send");
+            request.AddParameter("data", 54);
+            Assert.Equal("we got 54", client.Post(request).Content);
+
+            request = new RestRequest("send");
+            request.AddParameter("data", 56);
+            Assert.Equal("we got 56", client.Post(request).Content);
+            requests.AssertNoHandlerExceptions();
+            Assert.Equal(2, requests.Handlers[0].Called);
         }
     }
 }

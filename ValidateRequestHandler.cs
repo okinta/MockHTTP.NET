@@ -8,7 +8,7 @@ namespace MockHttp.Net
     /// <summary>
     /// Creates a mock request handler that validates parameters.
     /// </summary>
-    internal class ValidateRequestHandler
+    public class ValidateRequestHandler
     {
         /// <summary>
         /// Gets the mock request handler to use for responding to requests.

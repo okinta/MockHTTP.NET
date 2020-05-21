@@ -96,6 +96,32 @@ namespace MockHttp.Net
         }
 
         /// <summary>
+        /// Creates a HTTP POST mock request that validates the given parameters were
+        /// received from the request and returns the given response.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="expectedContent">The content expected to be received by from
+        /// request.</param>
+        /// <param name="response">The response to return when a mock request is
+        /// received.</param>
+        public HttpHandler(string url, string expectedContent, string response) :
+            this(url, new ValidateRequestHandler(expectedContent, response).Handler)
+        {
+        }
+
+        /// <summary>
+        /// Creates a HTTP POST mock request that validates the given parameters were
+        /// received in order from the request and returns in order the given responses.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="handlers">The list of handlers to respond to the
+        /// requests.</param>
+        public HttpHandler(string url, params ValidateRequestHandler[] handlers) :
+            this(url, new SequencedRequestHandler(handlers).Handler)
+        {
+        }
+
+        /// <summary>
         /// Creates a HTTP mock request that calls the given function when a request is
         /// received.
         /// </summary>
@@ -111,20 +137,6 @@ namespace MockHttp.Net
 
             MockHttpHandler = new MockHttpHandler(
                 url, HttpMethod, HandlerFunctionWithCounter);
-        }
-
-        /// <summary>
-        /// Creates a HTTP POST mock request that validates the given parameters were
-        /// received from the request and returns the given response.
-        /// </summary>
-        /// <param name="url">The URL to mock.</param>
-        /// <param name="expectedContent">The content expected to be received by from
-        /// request.</param>
-        /// <param name="response">The response to return when a mock request is
-        /// received.</param>
-        public HttpHandler(string url, string expectedContent, string response) :
-            this(url, new ValidateRequestHandler(expectedContent, response).Handler)
-        {
         }
 
         private string HandlerFunctionWithCounter(

@@ -31,11 +31,16 @@ namespace MockHttp.Net
         /// </summary>
         public string Url { get; }
 
+        /// <summary>
+        /// Gets the list of mock request handlers.
+        /// </summary>
+        public IReadOnlyList<HttpHandler> Handlers => new List<HttpHandler>(_handlers);
+
         private const int TestPortRangeEnd = 8200;
         private const int TestPortRangeStart = 8100;
         private Exception _handlerException;
-        private HttpHandler[] Handlers { get; }
         private MockServer MockServer { get; }
+        private readonly HttpHandler[] _handlers;
         private static readonly int[] PortInUseErrorCodes = { 183, 400 };
 
         /// <summary>
@@ -61,7 +66,7 @@ namespace MockHttp.Net
         /// null.</exception>
         internal MockRequests(RandomNumber random, params HttpHandler[] handlers)
         {
-            Handlers = handlers ?? throw new ArgumentNullException(
+            _handlers = handlers ?? throw new ArgumentNullException(
                 nameof(handlers), @"handlers must not be null");
 
             foreach (var handler in handlers)
@@ -91,7 +96,7 @@ namespace MockHttp.Net
         /// </summary>
         /// <param name="index">The index to retrieve.</param>
         /// <returns>The CustomMockHttpHandler instance at the specified index.</returns>
-        public HttpHandler this[int index] => Handlers[index];
+        public HttpHandler this[int index] => _handlers[index];
 
         /// <summary>
         /// Stops the mock HTTP server.
@@ -124,7 +129,7 @@ namespace MockHttp.Net
         {
             AssertNoHandlerExceptions();
 
-            foreach (var handler in Handlers)
+            foreach (var handler in _handlers)
             {
                 if (handler.Called == 0)
                     throw new RequestNotCalledException(
