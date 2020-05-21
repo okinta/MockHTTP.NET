@@ -138,7 +138,7 @@ namespace Tests
             request = new RestRequest("send");
             request.AddParameter("data", 56);
             Assert.Equal("we got 56", client.Post(request).Content);
-            requests.AssertNoHandlerExceptions();
+            requests.AssertAllCalledOnce();
             Assert.Equal(2, requests.Handlers[0].Called);
         }
 
@@ -162,7 +162,7 @@ namespace Tests
                 client.Post(request).Content);
 
             Assert.Throws<EqualException>(
-                () => requests.AssertNoHandlerExceptions());
+                () => requests.AssertAllCalledOnce());
             Assert.Equal(2, requests.Handlers[0].Called);
         }
 
@@ -191,7 +191,29 @@ namespace Tests
 
             Assert.Throws<InvalidOperationException>(
                 () => requests.AssertNoHandlerExceptions());
+            Assert.Throws<RequestCalledTooOftenException>(
+                () => requests.AssertAllCalledOnce());
             Assert.Equal(3, requests.Handlers[0].Called);
+        }
+
+        [Fact]
+        public void TestTooFewSequenceCalls()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler("/send",
+                    new ValidateRequestHandler(
+                        "data=54", "we got 54"),
+                    new ValidateRequestHandler(
+                        "data=56", "we got 56")));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("send");
+            request.AddParameter("data", 54);
+            Assert.Equal("we got 54", client.Post(request).Content);
+
+            Assert.Throws<RequestCalledTooFewException>(
+                () => requests.AssertAllCalledOnce());
+            Assert.Equal(1, requests.Handlers[0].Called);
         }
     }
 }

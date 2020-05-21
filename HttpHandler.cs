@@ -30,9 +30,14 @@ namespace MockHttp.Net
         public event Action<Exception> OnError;
 
         /// <summary>
-        /// Gets the number of times the MockHttpHandler was called.
+        /// Gets the number of times the handler was called.
         /// </summary>
         public int Called { get; private set; }
+
+        /// <summary>
+        /// Gets the number of handlers this instance manages.
+        /// </summary>
+        public int Count { get; }
 
         /// <summary>
         /// Gets the URL of the MockHttpHandler.
@@ -117,7 +122,8 @@ namespace MockHttp.Net
         /// <param name="handlers">The list of handlers to respond to the
         /// requests.</param>
         public HttpHandler(string url, params ValidateRequestHandler[] handlers) :
-            this(url, new SequencedRequestHandler(handlers).Handler)
+            this(url, new SequencedRequestHandler(handlers).Handler,
+                HttpMethods.Post, handlers.Length)
         {
         }
 
@@ -129,11 +135,18 @@ namespace MockHttp.Net
         /// <param name="handlerFunction">The function to call when a mock request is
         /// received.</param>
         /// <param name="httpMethod">The HTTP method to mock.</param>
-        public HttpHandler(string url, Handler handlerFunction, HttpMethods httpMethod)
+        public HttpHandler(string url, Handler handlerFunction, HttpMethods httpMethod) :
+            this(url, handlerFunction, httpMethod, 1)
         {
-            Url = url;
-            HttpMethod = httpMethod.GetMethod();
+        }
+
+        private HttpHandler(
+            string url, Handler handlerFunction, HttpMethods httpMethod, int count)
+        {
+            Count = count;
             HandlerFunction = handlerFunction;
+            HttpMethod = httpMethod.GetMethod();
+            Url = url;
 
             MockHttpHandler = new MockHttpHandler(
                 url, HttpMethod, HandlerFunctionWithCounter);

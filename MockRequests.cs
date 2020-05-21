@@ -135,11 +135,19 @@ namespace MockHttp.Net
                     throw new RequestNotCalledException(
                         handler.Url, $"{handler.Url} was not called");
 
-                if (handler.Called > 1)
+                if (handler.Called > handler.Count)
                     throw new RequestCalledTooOftenException(
-                        handler.Url, 1, handler.Called,
-                        $"{handler.Url} was only expected to be called once. " +
-                        $"Instead, was called {handler.Called} times");
+                        handler.Url, handler.Count, handler.Called,
+                        $"{handler.Url} was only expected to be called " +
+                        $"{handler.Count} time(s). Instead, was called " +
+                        $"{handler.Called} times");
+
+                if (handler.Called < handler.Count)
+                    throw new RequestCalledTooFewException(
+                        handler.Url, handler.Count, handler.Called,
+                        $"{handler.Url} was expected to be called " +
+                        $"{handler.Count} time(s). Instead, was called " +
+                        $"{handler.Called} times");
             }
         }
 
