@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Net;
 using System;
-using Xunit;
 
 namespace MockHttp.Net
 {
@@ -54,9 +53,6 @@ namespace MockHttp.Net
         /// Gets the MockHttpHandler handler function.
         /// </summary>
         public Handler HandlerFunction { get; }
-
-        private string ExpectedResponse { get; } = "";
-        private string ValidatedRequestResponse { get; } = "";
 
         /// <summary>
         /// Creates a HTTP GET mock request that returns an empty response.
@@ -126,16 +122,9 @@ namespace MockHttp.Net
         /// request.</param>
         /// <param name="response">The response to return when a mock request is
         /// received.</param>
-        public HttpHandler(string url, string expectedContent, string response)
+        public HttpHandler(string url, string expectedContent, string response) :
+            this(url, new ValidateRequestHandler(expectedContent, response).Handler)
         {
-            Url = url;
-            HttpMethod = HttpMethods.Post.GetMethod();
-            ExpectedResponse = expectedContent;
-            ValidatedRequestResponse = response;
-            HandlerFunction = ValidateRequest;
-
-            MockHttpHandler = new MockHttpHandler(
-                url, HttpMethod, HandlerFunctionWithCounter);
         }
 
         private string HandlerFunctionWithCounter(
@@ -154,15 +143,6 @@ namespace MockHttp.Net
                 OnError?.Invoke(e);
                 throw;
             }
-        }
-
-        private string ValidateRequest(
-            HttpListenerRequest req,
-            HttpListenerResponse rsp,
-            Dictionary<string, string> prm)
-        {
-            Assert.Equal(ExpectedResponse, req.GetContent());
-            return ValidatedRequestResponse;
         }
 
         private static Handler CreateHandler(string response)
