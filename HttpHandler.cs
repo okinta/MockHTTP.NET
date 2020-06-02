@@ -1,5 +1,6 @@
 ﻿using MockHttpServer;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System;
 
@@ -73,6 +74,17 @@ namespace MockHttp.Net
         /// received.</param>
         public HttpHandler(string url, string response) :
             this(url, response, HttpMethods.Get)
+        {
+        }
+
+        /// <summary>
+        /// Creates a HTTP mock request that returns an ordered sequence of strings.
+        /// </summary>
+        /// <param name="url">The URL to mock.</param>
+        /// <param name="responses">The ordered sequence of responses to return when a
+        /// mock request is received.</param>
+        public HttpHandler(string url, params string[] responses) :
+            this(url, CreateHandler(responses), HttpMethods.Get, responses.Length)
         {
         }
 
@@ -173,6 +185,14 @@ namespace MockHttp.Net
         private static Handler CreateHandler(string response)
         {
             return (req, rsp, prm) => response;
+        }
+
+        private static Handler CreateHandler(params string[] responses)
+        {
+            return new SequencedRequestHandler(responses.Select(
+                response => (Handler) (
+                    (req, rsp, prm)
+                        => response)).ToArray()).Handler;
         }
     }
 }

@@ -222,5 +222,40 @@ namespace Tests
                 () => requests.AssertAllCalledOnce());
             Assert.Equal(1, requests.Handlers[0].Called);
         }
+
+        [Fact]
+        public void TestMultipleResponses()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler(
+                    "/get", new[] {"hello 1", "hello 2"}));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("get");
+            client.Get(request).Content
+                .Should().Be("hello 1");
+            client.Get(request).Content
+                .Should().Be("hello 2");
+            requests.AssertAllCalledOnce();
+        }
+
+        [Fact]
+        public void TestMultipleResponsesTooFew()
+        {
+            using var requests = new MockRequests(
+                new HttpHandler(
+                    "/get", "hello 1", "hello 2", "hello 3"));
+
+            var client = new RestClient(requests.Url);
+            var request = new RestRequest("get");
+            client.Get(request).Content
+                .Should().Be("hello 1");
+            client.Get(request).Content
+                .Should().Be("hello 2");
+
+            requests
+                .Invoking(r => r.AssertAllCalledOnce())
+                .Should().Throw<RequestCalledTooFewException>();
+        }
     }
 }

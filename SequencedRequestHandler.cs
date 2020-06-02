@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System;
 
@@ -16,7 +17,21 @@ namespace MockHttp.Net
         public HttpHandler.Handler Handler { get; }
 
         private int HandlerIndex { get; set; }
-        private IList<ValidateRequestHandler> Handlers { get; }
+        private IList<HttpHandler.Handler> Handlers { get; }
+
+        /// <summary>
+        /// Instantiates a new instance.
+        /// </summary>
+        /// <param name="handlers">The collection of validation handlers to iterate
+        /// through.</param>
+        /// <exception cref="ArgumentNullException">If <paramref name="handlers"/> is
+        /// null.</exception>
+        /// <exception cref="ArgumentException">If <paramref name="handlers"/> are
+        /// empty.</exception>
+        public SequencedRequestHandler(params ValidateRequestHandler[] handlers)
+            : this(handlers.Select(handler => handler.Handler).ToArray())
+        {
+        }
 
         /// <summary>
         /// Instantiates a new instance.
@@ -26,7 +41,7 @@ namespace MockHttp.Net
         /// null.</exception>
         /// <exception cref="ArgumentException">If <paramref name="handlers"/> are
         /// empty.</exception>
-        public SequencedRequestHandler(params ValidateRequestHandler[] handlers)
+        public SequencedRequestHandler(params HttpHandler.Handler[] handlers)
         {
             if (handlers is null)
                 throw new ArgumentNullException(
@@ -36,7 +51,7 @@ namespace MockHttp.Net
                 throw new ArgumentException(
                     "at least one handler must be provided", nameof(handlers));
 
-            Handlers = new List<ValidateRequestHandler>(handlers);
+            Handlers = new List<HttpHandler.Handler>(handlers);
             Handler = OnReceiveRequest;
         }
 
@@ -59,7 +74,7 @@ namespace MockHttp.Net
             var index = HandlerIndex;
             HandlerIndex += 1;
 
-            ValidateRequestHandler handler;
+            HttpHandler.Handler handler;
             try
             {
                 handler = Handlers[index];
@@ -70,7 +85,7 @@ namespace MockHttp.Net
                     "No more handlers are available for the request", e);
             }
 
-            return handler.Handler(req, rsp, prm);
+            return handler(req, rsp, prm);
         }
     }
 }
