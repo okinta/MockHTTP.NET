@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using FluentAssertions;
+using System.Collections.Generic;
 using System.Net;
-using Xunit.Sdk;
-using Xunit;
 
 namespace MockHttp.Net
 {
@@ -43,14 +42,13 @@ namespace MockHttp.Net
         /// for the mock request.</param>
         /// <param name="prm">The list of parameters received in the URL.</param>
         /// <returns>The mocked response.</returns>
-        /// <exception cref="EqualException">If the request does not have the expected
-        /// parameters.</exception>
         private string ValidateRequest(
             HttpListenerRequest req,
             HttpListenerResponse rsp,
             Dictionary<string, string> prm)
         {
-            Assert.Equal(ExpectedContent, req.GetContent());
+            var content = req.GetContent();
+            content.Should().BeEquivalentTo(ExpectedContent);
             return ValidatedResponse;
         }
     }

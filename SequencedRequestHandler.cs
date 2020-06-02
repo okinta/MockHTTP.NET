@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Net;
 using System;
-using Xunit.Sdk;
 
 namespace MockHttp.Net
 {
@@ -50,8 +49,6 @@ namespace MockHttp.Net
         /// for the mock request.</param>
         /// <param name="prm">The list of parameters received in the URL.</param>
         /// <returns>The mocked response.</returns>
-        /// <exception cref="EqualException">If the request does not have the expected
-        /// parameters.</exception>
         /// <exception cref="InvalidOperationException">If there are no more handlers
         /// available for the request.</exception>
         private string OnReceiveRequest(

@@ -1,4 +1,5 @@
-﻿using MockHttp.Net.Exceptions;
+﻿using FluentAssertions;
+using MockHttp.Net.Exceptions;
 using MockHttp.Net;
 using RestSharp;
 using System;
@@ -84,11 +85,12 @@ namespace Tests
 
             var client = new RestClient(requests.Url);
             var request = new RestRequest("send");
-            Assert.StartsWith(
-                "Exception in handler: Assert.Equal() Fail",
-                client.Post(request).Content);
-            Assert.Throws<EqualException>(
-                () => requests.AssertNoHandlerExceptions());
+            client.Post(request).Content
+                .Should().StartWith(
+                    "Exception in handler: Expected content to be equivalent to");
+            requests
+                .Invoking(r => r.AssertNoHandlerExceptions())
+                .Should().Throw<XunitException>();
         }
 
         [Fact]
@@ -100,10 +102,12 @@ namespace Tests
 
             var client = new RestClient(requests.Url);
             var request = new RestRequest("send");
-            Assert.StartsWith(
-                "Exception in handler: Assert.Equal() Fail",
-                client.Post(request).Content);
-            Assert.Throws<EqualException>(() => requests.AssertAllCalledOnce());
+            client.Post(request).Content
+                .Should().StartWith(
+                    "Exception in handler: Expected content to be equivalent to");
+            requests
+                .Invoking(r => r.AssertAllCalledOnce())
+                .Should().Throw<XunitException>();
         }
 
         [Fact]
@@ -156,14 +160,17 @@ namespace Tests
             var request = new RestRequest("send");
             request.AddParameter("data", 54);
 
-            Assert.Equal("we got 54", client.Post(request).Content);
-            Assert.StartsWith(
-                "Exception in handler: Assert.Equal() Fail",
-                client.Post(request).Content);
+            client.Post(request).Content
+                .Should().BeEquivalentTo("we got 54");
+            client.Post(request).Content
+                .Should().StartWith(
+                    "Exception in handler: Expected content to be equivalent to");
+            requests
+                .Invoking(r => r.AssertAllCalledOnce())
+                .Should().Throw<XunitException>();
 
-            Assert.Throws<EqualException>(
-                () => requests.AssertAllCalledOnce());
-            Assert.Equal(2, requests.Handlers[0].Called);
+            requests.Handlers[0].Called
+                .Should().Be(2);
         }
 
         [Fact]
